@@ -1,0 +1,64 @@
+Sub FormatReportToStandard()
+
+    ' Page setup
+    With ActiveDocument.PageSetup
+        .TopMargin = InchesToPoints(1)
+        .BottomMargin = InchesToPoints(1)
+        .LeftMargin = InchesToPoints(1.25)
+        .RightMargin = InchesToPoints(1)
+        .PaperSize = wdPaperA4
+    End With
+
+    ' Format all text
+    With ActiveDocument.Range
+        With .Font
+            .Name = "Times New Roman"
+            .Size = 12
+        End With
+        .ParagraphFormat.Alignment = wdAlignParagraphJustify
+        .ParagraphFormat.LineSpacingRule = wdLineSpace1pt5
+    End With
+
+    ' Format headings
+    With ActiveDocument.Styles(wdStyleHeading1).Font
+        .Size = 16
+        .Bold = True
+    End With
+
+    With ActiveDocument.Styles(wdStyleHeading2).Font
+        .Size = 14
+        .Bold = True
+    End With
+
+    With ActiveDocument.Styles(wdStyleHeading3).Font
+        .Size = 12
+        .Bold = True
+    End With
+
+    ' Center-align all tables
+    Dim tbl As Table
+    For Each tbl In ActiveDocument.Tables
+        tbl.Rows.Alignment = wdAlignRowCenter
+    Next tbl
+
+    ' Center-align all inlineshapes (figures)
+    Dim fig As InlineShape
+    For Each fig In ActiveDocument.InlineShapes
+        fig.Range.ParagraphFormat.Alignment = wdAlignParagraphCenter
+    Next fig
+
+    ' Format figure and table captions
+    Dim para As Paragraph
+    For Each para In ActiveDocument.Paragraphs
+        If InStr(1, LCase(para.Range.Text), "figure") = 1 Or InStr(1, LCase(para.Range.Text), "table") = 1 Then
+            With para.Range
+                .ParagraphFormat.Alignment = wdAlignParagraphCenter
+                .Font.Bold = True
+                .Font.Size = 12
+            End With
+        End If
+    Next para
+
+    MsgBox "Formatting applied successfully!", vbInformation
+
+End Sub
